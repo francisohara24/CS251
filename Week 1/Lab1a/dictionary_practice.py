@@ -24,8 +24,8 @@ dictionary = {}
 for i in range(3):
     dictionary[fruit[i]] = hundreds[i]
 
-print(f"keys: {dictionary.keys()}")
-print(f"values: {dictionary.values()}")
+print(dictionary.keys())
+print(dictionary.values())
 
 # UNCOMMENT BELOW TO CHECK WORK
 print(75*'-')

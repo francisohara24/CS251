@@ -42,8 +42,10 @@ def read_csv(filepath):
     # YOUR CODE HERE (you can delete the pass statement below)
     data = []
     file = open(filepath, "r")
+
     for line in file:
         data.append(line.strip().split(","))
+
     return data
 
 def read_cat_csv(filepath):
@@ -99,11 +101,11 @@ def read_cat_csv(filepath):
     data = []
 
     for line in file:
-        line = line.strip().split()
+        line = line.strip().split(",")
         encoded_line = []
+        column_label = {0: "name", 1:"year", 2:"hobby"}
 
         for i in range(3):
-            column_label = {0: "name", 1:"year", 2:"hobby"}
             if line[i] not in levels[column_label[i]]:
                 levels[column_label[i]].append(line[i])
             encoded_line.append(levels[column_label[i]].index(line[i]))
@@ -112,5 +114,3 @@ def read_cat_csv(filepath):
 
     return data, levels
 
-
-    
