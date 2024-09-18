@@ -126,14 +126,66 @@ class Data:
         - Make use of code from Lab 1a!
         """
         self.filepath = filepath
+        self.data = []
+        self.headers = []
+        self.cats2levels = {}
+        self.header2col = {}
+
         lines = open(filepath, "r").read().split("\n")
+
         valid_positions = []
+        categorical_positions = []
+        second_line = lines[1].strip().split(",")
 
-        for i in range(len(lines[1])):
-            line = lines
+        for i in range(len(second_line)):
+            second_line[i] = second_line[i].strip()
+            if second_line[i] in ["numeric", "categorical"]:
+                valid_positions.append(i)
+
+                if second_line[i] == "categorical":
+                    categorical_positions.append(i)
+
+            elif second_line[i] not in ["string", "date"]:
+                raise Exception(f"Illegal argument found on line 2: `{second_line[i]}`. Valid arguments for line 2 are `categorical`, `numeric`, `string`, and `date`")
 
 
+        header_line = lines[0].strip().split(",")
+        col2header = {}
+        header2col_index = 0
 
+        for i in valid_positions:
+            self.headers.append(header_line[i])
+            col2header[i] = header_line[i]
+            self.header2col[header_line[i]] = header2col_index
+            header2col_index += 1
+
+            if i in categorical_positions:
+                self.cats2levels[header_line[i]] = []
+
+        for line in lines[2:]:
+            if len(line) == 0:
+                continue
+
+            line = line.strip().split(",")
+            encoded_line = []
+
+            for i in valid_positions:
+                line[i] = line[i].strip()
+                if i in categorical_positions:
+                    if line[i] == "":
+                        line[i] = "Missing"
+                    if line[i] not in self.cats2levels[col2header[i]]:
+                        self.cats2levels[col2header[i]].append(line[i])
+                    encoded_line.append(self.cats2levels[col2header[i]].index(line[i]))
+                else:
+                    if line[i] == "":
+                        encoded_line.append(np.nan)
+                    else:
+                        encoded_line.append(float(line[i]))
+
+            self.data.append(encoded_line)
+
+        self.data = np.array(self.data)
 
     def __str__(self):
         """toString method
@@ -150,7 +202,25 @@ class Data:
         NOTE: It is fine to print out int-coded categorical variables (no extra work compared to printing out numeric data).
         Printing out the categorical variables with string levels would be a small extension.
         """
-        pass
+        result = ""
+        max_header_len = max([len(header) for header in self.headers])
+        header_string = "".join([" " + str(header).ljust(max_header_len) + " " for header in self.headers])
+        result += header_string + "\n"
+        result += ("-" * len(header_string) * 2) + "\n"
+
+        max_col_len = {}
+
+        for col in range(self.data.shape[1]):
+            column = self.data[:, col]
+            max_col_len[col] = max([len(str(value)) for value in column])
+
+        for row in range(self.data.shape[0]):
+            for col in range(self.data.shape[1]):
+                result += "".join([" " + str(self.data[row, col]).ljust(max_col_len[col]) + " "])
+            result += "\n"
+
+        return result
+
 
     def get_headers(self):
         """Get list of header names (all variables)
@@ -159,7 +229,7 @@ class Data:
         -----------
         Python list of str.
         """
-        pass
+        return self.headers
 
     def get_mappings(self):
         """Get method for mapping between variable name and column index
@@ -168,7 +238,7 @@ class Data:
         -----------
         Python dictionary. str -> int
         """
-        pass
+        return self.header2col
 
     def get_cat_level_mappings(self):
         """Get method for mapping between categorical variable names and a list of the respective unique level strings.
@@ -177,7 +247,7 @@ class Data:
         -----------
         Python dictionary. str -> list of str
         """
-        pass
+        return self.cats2levels
 
     def get_num_dims(self):
         """Get method for number of dimensions in each data sample
@@ -186,7 +256,7 @@ class Data:
         -----------
         int. Number of dimensions in each data sample. Same thing as number of variables.
         """
-        pass
+        return len(self.headers)
 
     def get_num_samples(self):
         """Get method for number of data points (samples) in the dataset
@@ -195,7 +265,7 @@ class Data:
         -----------
         int. Number of data samples in dataset.
         """
-        pass
+        return len(self.data)
 
     def get_sample(self, rowInd):
         """Gets the data sample at index `rowInd` (the `rowInd`-th sample)
@@ -204,7 +274,7 @@ class Data:
         -----------
         ndarray. shape=(num_vars,) The data sample at index `rowInd`
         """
-        pass
+        return self.data[rowInd]
 
     def get_header_indices(self, headers):
         """Gets the variable (column) indices of the str variable names in `headers`.
@@ -217,7 +287,10 @@ class Data:
         -----------
         Python list of nonnegative ints. shape=len(headers). The indices of the headers in `headers` list.
         """
-        pass
+        header_indices = []
+        for header in headers:
+            header_indices.append(self.header2col[header])
+        return header_indices
 
     def get_all_data(self):
         """Gets a copy of the entire dataset
@@ -230,7 +303,7 @@ class Data:
             NOTE: This should be a COPY, not the data stored here itself. This can be accomplished with numpy's copy
             function.
         """
-        pass
+        return self.data.copy()
 
     def head(self):
         """Return the 1st five data samples (all variables)
@@ -241,7 +314,7 @@ class Data:
         -----------
         ndarray. shape=(5, num_vars). 1st five data samples.
         """
-        pass
+        return self.data[:5]
 
     def tail(self):
         """Return the last five data samples (all variables)
@@ -252,7 +325,7 @@ class Data:
         -----------
         ndarray. shape=(5, num_vars). Last five data samples.
         """
-        pass
+        return self.data[-5:]
 
     def limit_samples(self, start_row, end_row):
         """Update the data so that this `Data` object only stores samples in the contiguous range:
@@ -262,7 +335,7 @@ class Data:
         (Week 2)
 
         """
-        pass
+        self.data = self.data[start_row:end_row]
 
     def select_data(self, headers, rows=[]):
         """Return data samples corresponding to the variable names in `headers`.
@@ -286,4 +359,11 @@ class Data:
 
         Hint: For selecting a subset of rows from the data ndarray, check out np.ix_
         """
-        pass
+
+        cols = list(sorted(self.get_header_indices(headers)))
+        rows = list(sorted(rows))
+        if len(rows) == 0:
+            return self.data[:, cols]
+        else:
+            return self.data[np.ix_(rows, cols)]
+
