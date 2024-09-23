@@ -1,5 +1,6 @@
-"""data.py
-Reads CSV files, stores data, access/filter data by variable name
+"""data_extension.py
+This is an extension of the Data class that is capable of parsing dates, strings, and boolean values.
+It is also capable of reading data from CSV files with custom delimiters such as `;`.
 Francis O'Hara
 CS 251/2: Data Analysis and Visualization
 Fall 2024
@@ -133,19 +134,16 @@ class Data:
 
         lines = open(filepath, "r").read().split("\n")
 
-        valid_positions = []
         categorical_positions = []
         second_line = lines[1].strip().split(",")
 
         for i in range(len(second_line)):
             second_line[i] = second_line[i].strip()
-            if second_line[i] in ["numeric", "categorical"]:
-                valid_positions.append(i)
 
-                if second_line[i] == "categorical":
-                    categorical_positions.append(i)
+            if second_line[i] == "categorical":
+                categorical_positions.append(i)
 
-            elif second_line[i] not in ["string", "date"]:
+            elif second_line[i] not in ["numeric", "string", "date"]:
                 raise Exception(f"Illegal argument found on line 2: `{second_line[i]}`. Valid arguments for line 2 are `categorical`, `numeric`, `string`, and `date`")
 
 
@@ -153,7 +151,7 @@ class Data:
         col2header = {}
         header2col_index = 0
 
-        for i in valid_positions:
+        for i in range(len(header_line)):
             header_line[i] = header_line[i].strip()
             self.headers.append(header_line[i])
             col2header[i] = header_line[i]
@@ -170,7 +168,7 @@ class Data:
             line = line.strip().split(",")
             encoded_line = []
 
-            for i in valid_positions:
+            for i in range(len(line)):
                 line[i] = line[i].strip()
                 if i in categorical_positions:
                     if line[i] == "":
@@ -181,8 +179,12 @@ class Data:
                 else:
                     if line[i] == "":
                         encoded_line.append(np.nan)
-                    else:
+                    if second_line[i] == "numeric":
                         encoded_line.append(float(line[i]))
+                    elif second_line[i] == "date":
+                        encoded_line.append(np.datetime64(line[i]))
+                    else:
+                        encoded_line.append(line[i])
 
             self.data.append(encoded_line)
 

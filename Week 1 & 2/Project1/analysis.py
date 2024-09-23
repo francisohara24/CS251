@@ -6,6 +6,7 @@ Fall 2024
 '''
 import numpy as np
 import matplotlib.pyplot as plt
+from IPython.core.pylabtools import figsize
 
 
 class Analysis:
@@ -50,7 +51,7 @@ class Analysis:
 
         NOTE: There should be no loops in this method!
         '''
-        mins = self.data.select_data(headers, rows).min
+        return self.data.select_data(headers, rows).min(axis=0)
 
     def max(self, headers, rows=[]):
         '''Computes the maximum of each variable in `headers` in the data object.
@@ -70,7 +71,7 @@ class Analysis:
 
         NOTE: There should be no loops in this method!
         '''
-        pass
+        return self.data.select_data(headers, rows).max(axis=0)
 
     def range(self, headers, rows=[]):
         '''Computes the range [min, max] for each variable in `headers` in the data object.
@@ -92,7 +93,8 @@ class Analysis:
 
         NOTE: There should be no loops in this method!
         '''
-        pass
+        return self.min(headers, rows), self.max(headers, rows)
+
 
     def mean(self, headers, rows=[]):
         '''Computes the mean for each variable in `headers` in the data object.
@@ -113,7 +115,8 @@ class Analysis:
         NOTE: You CANNOT use np.mean here!
         NOTE: There should be no loops in this method!
         '''
-        pass
+        data = self.data.select_data(headers, rows)
+        return data.sum(axis=0) / data.shape[0]
 
     def var(self, headers, rows=[]):
         '''Computes the variance for each variable in `headers` in the data object.
@@ -135,7 +138,8 @@ class Analysis:
         - You CANNOT use np.var or np.mean here!
         - There should be no loops in this method!
         '''
-        pass
+        data = self.data.select_data(headers, rows)
+        return (((data - self.mean(headers, rows)) ** 2).sum(axis=0)) / (data.shape[0] - 1)
 
     def std(self, headers, rows=[]):
         '''Computes the standard deviation for each variable in `headers` in the data object.
@@ -157,7 +161,7 @@ class Analysis:
         - You CANNOT use np.var, np.std, or np.mean here!
         - There should be no loops in this method!
         '''
-        pass
+        return self.var(headers, rows) ** 0.5
 
     def show(self):
         '''Simple wrapper function for matplotlib's show function.
@@ -188,7 +192,13 @@ class Analysis:
 
         NOTE: Do not call plt.show() here.
         '''
-        pass
+        x = self.select_variable(ind_var)
+        y = self.select_variable(dep_var)
+        plt.scatter(x, y)
+        plt.title(title)
+        plt.xlabel(ind_var)
+        plt.ylabel(dep_var)
+        return x, y
 
     def pair_plot(self, data_vars, fig_sz=(12, 12), title=''):
         '''Create a pair plot: grid of scatter plots showing all combinations of variables in `data_vars` in the
@@ -223,5 +233,27 @@ class Analysis:
 
         NOTE: For loops are allowed here!
         '''
+        fig, axs = plt.subplots(len(data_vars), len(data_vars), figsize=fig_sz, sharex='col', sharey='row')
+        for row in range(len(data_vars)):
+            for col in range(len(data_vars)):
+                axs[row, col].scatter(self.select_variable(data_vars[col]), self.select_variable(data_vars[row]))
+                if col == 0:
+                    axs[row, col].set_ylabel(data_vars[row])
+                if row == len(data_vars) - 1:
+                    axs[row, col].set_xlabel(data_vars[col])
+        fig.suptitle(title)
+        return fig, axs
 
-        pass
+    def select_variable(self, var_name):
+        """Returns a variable from the dataset as a numpy nd array.
+
+        Parameters
+        ----------
+        var_name: The string name of the variable/column to be selected from the data.
+
+        Returns
+        -------
+        var:
+            A numpy ndarray containing all the data in the selected variable
+        """
+        return self.data.get_all_data()[:, self.data.get_mappings()[var_name]]
