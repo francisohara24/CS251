@@ -30,8 +30,12 @@ def sidebarplot(values, labels, title, show_counts=True, figsize=(6, 7)):
     round each displayed value to the nearest 0.01:
         values = np.round(values, 2)
     '''
-    pass
-
+    values = np.round(values, 2)
+    ax = plt.barh(labels, values)
+    if show_counts:
+        plt.bar_label(ax, values)
+    plt.title(title)
+    plt.show()
 
 def sort(values, labels, sort_by='na'):
     '''Sort the arrays `values` and `labels` in the same way so that corresponding items in either array stay matched up
@@ -55,7 +59,13 @@ def sort(values, labels, sort_by='na'):
     NOTE:
     - np.argsort might be helpful here.
     '''
-    pass
+    if sort_by == "na":
+        return values, labels
+    elif sort_by == "value":
+        sorted_order = np.argsort(values)
+    elif sort_by == "label":
+        sorted_order = np.argsort(labels)
+    return values[sorted_order], labels[sorted_order]
 
 
 def grouped_sidebarplot(values, header1_labels, header2_levels, title, figsize=(6, 7)):
