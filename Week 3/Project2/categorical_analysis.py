@@ -36,7 +36,7 @@ class CatAnalysis(analysis.Analysis):
         Returns:
         -----------
         ndarray. shape=(num_levels,). The number of samples that have each level of the categorical variable named `header`
-        list of strs. len=num_levels. The level strings of the categorical variable  `header` associated with the counts.
+        list of strs. len=num_levels. The level strings of the categorical variable `header` associated with the counts.
 
         NOTE:
         - Your implementation should rely on logical indexing. Using np.unique is not allowed here.
@@ -44,7 +44,10 @@ class CatAnalysis(analysis.Analysis):
         - `self.data` stores categorical levels as INTS so it is helpful to work with INT-coded levels when doing the counting.
         The method should, however, return the STRING-coded levels (e.g. for plotting).
         '''
-        pass
+        str_levels = self.data.get_cat_levels_str(header)
+        counts = np.array([sum(self.data.select_data([header]) == int_level) for int_level in self.data.get_cat_levels_int(header)]).flatten()
+        return counts, str_levels
+
 
     def cat_mean(self, numeric_header, categorical_header):
         '''Computes the mean of values of the numeric variable `numeric_header` for each of the different categorical

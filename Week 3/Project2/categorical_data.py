@@ -27,6 +27,7 @@ class CatData(data.Data):
         cats2levels: Python dictionary or None.
         '''
         super().__init__(filepath, headers, data, header2col, cats2levels)
+        self.original_data = self.data.copy()
 
     def get_cat_levels_str(self, header):
         '''Get the list of categorical level strings associated with the `header`
@@ -48,7 +49,7 @@ class CatData(data.Data):
         NOTE: You should cast your list of levels associated with `header` as an ndarray. To do this, remember we can use
         np.array. So instead of returning blah (where blah is the list of levels) you would return np.array(blah).
         '''
-        pass
+        return np.array(self.cats2levels[header], dtype=str)
 
     def get_cat_levels_int(self, header):
         '''Get the list of int-coded categorical levels associated with the `header`
@@ -67,7 +68,7 @@ class CatData(data.Data):
         -----------
         ndarray of ints. int-coded categorical levels associated with the `header`
         '''
-        pass
+        return np.array(range(len(self.cats2levels[header])))
 
     def int2strlevels(self, header, int_levels):
         '''Convert the int-coded levels of the categorical variable named `header` into strings
@@ -87,7 +88,7 @@ class CatData(data.Data):
         -----------
         list of strs. string representations of the int-coded categorical levels `int_levels` associated with `header`
         '''
-        pass
+        return [self.cats2levels[header][int_level] for int_level in int_levels]
 
     def str2intlevels(self, header, str_levels):
         '''Convert the string-coded levels of the categorical variable named `header` into ints
@@ -107,7 +108,7 @@ class CatData(data.Data):
         -----------
         list of ints. int representations of the string-coded categorical levels `str_levels` associated with `header`
         '''
-        pass
+        return [self.cats2levels[header].index(str_level) for str_level in str_levels]
 
     def reset_dataset(self):
         '''Restores the `self.data` ndarray to the original dataset — i.e. removes any filtering of the dataset.
@@ -117,9 +118,9 @@ class CatData(data.Data):
         dataset (e.g. as it was read in from the CSV file). Assign it to a COPY of `self.data`.
         2. In this method, assign `self.data` to a COPY of the original dataset that you set in the constructor.
         '''
-        pass
+        self.data = self.original_data.copy()
 
-    def filter(self, header, strlevel):
+    def filter(self, header, str_level):
         '''Filters dataset to select samples (i.e. rows) only for which the value of the categorical variable `header`
         is equal to `strlevel`. The filtered dataset should replace `self.data`.
 
@@ -135,4 +136,4 @@ class CatData(data.Data):
         - Logical indexing requires that the array being used to index another has shape=`(N,)` instead of shape=`(N,1)`.
         Therefore, `np.squeeze` might be helpful...
         '''
-        pass
+        self.data = self.data[np.squeeze((self.select_data([header]) == self.str2intlevels(header, [str_level])[0]))]
