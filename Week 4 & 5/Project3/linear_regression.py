@@ -91,7 +91,7 @@ class LinearRegression(analysis.Analysis):
         self.A = A
         self.y = y
         self.intercept = float(c[0])
-        self.slope = c[1:]#.reshape((c[1].shape[0],1))
+        self.slope = c[1:]
         self.residuals = self.y - (A_hat @ c)
         self.mse = (self.residuals ** 2).mean()
         self.R2 = 1 - ((self.residuals ** 2).sum() / ((self.y - self.y.mean()) ** 2).sum())
@@ -115,8 +115,13 @@ class LinearRegression(analysis.Analysis):
 
         NOTE: You can write this method without any loops!
         '''
-        X = self.A if X is None else X
-        return self.intercept + X @ self.slope
+        if X is None:
+            X = self.A
+        else:
+            if self.p > 1:
+                X = self.make_polynomial_matrix(X, self.p)
+
+        return self.intercept + X.reshape((X.shape[0], self.p)) @ self.slope
 
 
     def r_squared(self, y_pred):
@@ -161,7 +166,7 @@ class LinearRegression(analysis.Analysis):
 
         Hint: Make use of self.compute_residuals
         """
-        return (self.compute_residuals(self.predict(self.A)) ** 2).mean()
+        return (self.compute_residuals(self.predict()) ** 2).mean()
 
     def scatter(self, ind_var, dep_var, title):
         """Creates a scatter plot with a regression line to visualize the model fit.
@@ -184,7 +189,7 @@ class LinearRegression(analysis.Analysis):
         """
         x, y = super().scatter(ind_var, dep_var, title)
         x_line = np.linspace(x.min(), x.max(), 100).squeeze()
-        y_line = (self.intercept + self.slope * x_line).squeeze()
+        y_line = (self.predict(x_line)).squeeze()
         plt.title(f"{title} R^2={self.R2:0.4f}")
         plt.plot(x_line, y_line, color="C3")
 
@@ -261,7 +266,15 @@ class LinearRegression(analysis.Analysis):
         NOTE: There should not be a intercept term ("x^0"), the linear regression solver method
         should take care of that.
         '''
-        pass
+        A = A.reshape((A.shape[0], 1))
+        poly_matrix = np.zeros(shape=(A.shape[0], p))
+       
+        for col_index in range(p):
+            poly_matrix[:, col_index] = A[:, 0] ** (col_index + 1)
+        
+        return poly_matrix
+
+    
 
     def poly_regression(self, ind_var, dep_var, p):
         '''Perform polynomial regression — generalizes self.linear_regression to polynomial curves
@@ -285,7 +298,28 @@ class LinearRegression(analysis.Analysis):
             appropriate for polynomial regresssion. Do this with self.make_polynomial_matrix.
             - You set the instance variable for the polynomial regression degree (self.p)
         '''
-        pass
+        A = self.make_polynomial_matrix(self.data.select_data([ind_var]), p)
+        y = self.data.select_data([dep_var])
+        A_hat = np.hstack((np.ones(shape=(A.shape[0], 1)), A))
+
+        c, _, _, _ = lstsq(A_hat, y)
+
+        self.ind_vars = [ind_var]
+        self.dep_var = dep_var
+        self.p = p
+        self.A = A
+        self.y = y
+        self.intercept = c[0]
+        self.slope = c[1:]
+
+        y_pred = self.predict()
+
+        self.residuals = self.compute_residuals(y_pred)
+        self.mse = self.compute_mse()
+        self.R2 = self.r_squared(y_pred)
+
+
+
 
     def get_fitted_slope(self):
         '''Returns the fitted regression slope.
@@ -295,7 +329,7 @@ class LinearRegression(analysis.Analysis):
         -----------
         ndarray. shape=(num_ind_vars, 1). The fitted regression slope(s).
         '''
-        pass
+        return self.slope
 
     def get_fitted_intercept(self):
         '''Returns the fitted regression intercept.
@@ -305,7 +339,7 @@ class LinearRegression(analysis.Analysis):
         -----------
         float. The fitted regression intercept(s).
         '''
-        pass
+        return self.intercept
 
     def initialize(self, ind_vars, dep_var, slope, intercept, p):
         '''Sets fields based on parameter values.
@@ -326,4 +360,18 @@ class LinearRegression(analysis.Analysis):
         TODO:
         - Use parameters and call methods to set all instance variables defined in constructor. 
         '''
-        pass
+        self.ind_vars = ind_vars
+        self.dep_var = dep_var
+        self.slope = slope
+        self.intercept = intercept
+        self.p = p
+        self.A = self.make_polynomial_matrix(self.data.select_data(ind_vars), p)
+        self.y = self.data.select_data([dep_var])
+
+        y_pred = self.predict()
+
+        self.residuals = self.compute_residuals(y_pred)
+        self.mse = self.compute_mse()
+        self.R2 = self.r_squared(y_pred)
+
+
