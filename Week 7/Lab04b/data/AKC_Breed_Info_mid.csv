@@ -1,0 +1,148 @@
+,weight_mid_lbs,height_mid_inches,Breed
+0,100.0,27.0,Akita
+1,125.0,28.0,Anatolian Sheepdog
+2,97.5,25.0,Bernese Mountain Dog
+3,100.0,25.0,Bloodhound
+4,85.0,27.0,Borzoi
+5,115.0,26.0,Bullmastiff
+6,140.0,32.0,Great Dane
+7,107.5,29.5,Great Pyrenees
+8,140.0,25.5,Great Swiss Mountain Dog
+9,120.0,31.5,Irish Wolfhound
+10,95.0,29.0,Kuvasz
+11,182.5,28.5,Mastiff
+12,125.0,27.0,Neopolitan Mastiff
+13,125.0,27.0,Newfoundland
+14,87.5,25.0,Otter Hound
+15,100.0,24.5,Rottweiler
+16,150.0,26.5,Saint Bernard
+17,55.0,26.0,Afghan Hound
+18,67.5,23.5,American Foxhound
+19,110.0,25.5,Beauceron
+20,62.5,24.0,Belgian Malinois
+21,67.5,24.0,Belgian Sheepdog
+22,67.5,24.0,Belgian Tervuren
+23,62.5,25.0,Black And Tan Coonhound
+24,110.0,27.0,Black Russian Terrier
+25,85.0,25.0,Bouvier Des Flandres
+26,67.5,23.0,Boxer
+27,75.0,25.0,Briard
+28,65.0,23.5,Chesapeake Bay Retriever
+29,50.0,19.5,Clumber Spaniel
+30,62.5,24.0,Collie (Rough) & (Smooth)
+31,72.5,26.0,Curly Coated Retriever
+32,80.0,27.0,Doberman Pinscher
+33,67.5,23.5,English Foxhound
+34,62.5,25.0,English Setter
+35,82.5,24.0,German Shepherd Dog
+36,65.0,23.5,German Shorthaired Pointer
+37,65.0,24.0,German Wirehaired Pointer
+38,72.5,26.5,Giant Schnauzer
+39,65.0,22.5,Golden Retriever
+40,62.5,25.0,Gordon Setter
+41,65.0,28.5,Greyhound
+42,65.0,26.0,Irish Setter
+43,107.5,31.0,Komondor
+44,67.5,22.5,Labrador Retriever
+45,62.5,22.0,Old English Sheepdog (Bobtail)
+46,45.0,20.0,Poodle Standard
+47,77.5,25.5,Rhodesian Ridgeback
+48,92.5,30.0,Scottish Deerhound
+49,72.5,25.5,Spinone Italiano
+50,155.0,25.0,Tibetan Mastiff
+51,77.5,26.0,Weimaraner
+52,45.0,23.0,Airdale Terrier
+53,45.0,18.0,American Staffordshire Terrier
+54,35.0,16.5,American Water Spaniel
+55,40.0,18.5,Australian Cattle Dog
+56,50.0,20.5,Australian Shepherd
+57,45.0,14.0,Basset Hound
+58,50.0,21.0,Bearded Collie
+59,40.0,20.0,Border Collie
+60,35.0,19.0,Brittany
+61,55.0,14.0,Bull Dog
+62,60.0,21.5,Bull Terrier
+63,45.0,21.5,Canaan Dog
+64,50.0,19.0,Chinese Shar Pei
+65,50.0,20.5,Chow Chow
+66,25.0,15.5,Cocker Spaniel-American
+67,30.0,16.0,Cocker Spaniel-English
+68,57.5,21.0,Dalmatian
+69,50.0,20.0,English Springer Spaniel
+70,42.5,18.0,Field Spaniel
+71,65.0,22.5,Flat Coated Retriever
+72,33.0,17.5,Finnish Spitz
+73,50.0,20.0,Harrier
+74,48.5,25.5,Ibizan Hound
+75,26.0,18.5,Irish Terrier
+76,55.0,16.5,Irish Water Spaniel
+77,42.5,18.0,Keeshond
+78,37.5,19.0,Kerry Blue Terrier
+79,50.0,19.5,Norwegian Elkhound
+80,42.5,19.0,Nova Scotia Duck Tolling Retriever
+81,35.0,14.0,Petit Basset Griffon Vendeen
+82,50.0,23.0,Pharaoh Hound
+83,50.0,22.0,Plott Hound
+84,55.0,22.5,Pointer
+85,32.5,18.0,Polish Lowland Sheepdog
+86,51.0,21.5,Portuguese Water Dog
+87,60.0,24.0,Redbone Coonhound
+88,52.5,25.5,Saluki
+89,57.5,21.5,Samoyed
+90,50.0,21.5,Siberian Husky
+91,40.0,19.0,Soft-Coated Wheaten Terrier
+92,26.0,15.0,Staffordshire Bull Terrier
+93,33.0,18.0,Standard Schnauzer
+94,42.5,15.5,Sussex Spaniel
+95,40.0,17.5,Welsh Springer Spaniel
+96,52.5,22.0,Wirehaired Pointing Griffon
+97,27.5,14.0,American Eskimo
+98,12.0,10.0,Australian Terrier
+99,21.0,17.0,Basenji
+100,24.0,14.5,Beagle
+101,20.5,15.5,Bedlington Terrier
+102,14.0,10.5,Bichon Frise
+103,13.5,13.5,Border Terrier
+104,20.0,14.5,Boston Terrier
+105,9.0,7.5,Brussels Griffon
+106,14.0,9.5,Cairn Terrier
+107,30.0,11.0,Cardigan Welsh Corgi
+108,17.5,12.5,Cavalier King Charles Spaniel
+109,24.0,8.5,Dachshund
+110,9.5,21.0,Dandie Dinmont Terrier
+111,12.0,10.0,English Toy Spaniel
+112,17.5,14.5,Fox Terrier Smooth
+113,17.5,14.5,Fox Terrier Wirehair
+114,22.5,11.5,French Bulldog
+115,30.0,17.5,German Pinscher
+116,35.0,14.0,Glen Imaal Terrier
+117,16.0,13.5,Lakeland Terrier
+118,17.5,15.5,Manchester Terrier (Standard)
+119,20.0,12.5,Poodle Miniature
+120,18.0,10.5,Pug
+121,31.0,16.5,Puli
+122,15.0,11.5,Schipperke
+123,20.0,11.0,Scottish Terrier
+124,19.0,12.0,Sealyham Terrier
+125,17.0,14.5,Shetland Sheepdog (Sheltie)
+126,22.5,14.5,Shiba Inu
+127,12.5,9.5,Shih Tzu
+128,9.5,9.5,Silky Terrier
+129,25.0,10.0,Skye Terrier
+130,12.0,10.0,Tibetan Spaniel
+131,25.0,15.5,Tibetan Terrier
+132,20.5,15.0,Welsh Terrier
+133,14.0,11.0,West Highland White Terrier
+134,28.5,20.0,Whippet
+135,10.0,10.5,Affenpinscher
+136,3.5,7.5,Chihuahua
+137,8.5,12.0,Chinese Crested
+138,8.0,13.5,Italian Greyhound
+139,7.5,9.5,Japanese Chin
+140,5.0,9.0,Maltese
+141,7.0,11.0,Manchester Terrier (Toy)
+142,7.5,9.5,Papillon
+143,5.0,12.0,Pomeranian
+144,10.0,10.0,Poodle Toy
+145,5.5,10.0,Toy Fox Terrier
+146,5.0,8.0,Yorkshire Terrier
