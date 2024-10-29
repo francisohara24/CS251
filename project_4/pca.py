@@ -105,7 +105,9 @@ class PCA:
         NOTE: You should do this wihout any loops
         NOTE: np.cov is off-limits here — compute it from "scratch"!
         '''
-        pass
+        centered_data = center(data)
+        return (centered_data.transpose() @ centered_data) / (centered_data.shape[0] - 1)
+
 
     def compute_prop_var(self, e_vals):
         '''Computes the proportion variance accounted for by the principal components (PCs).
@@ -119,7 +121,9 @@ class PCA:
         Python list. len = num_pcs
             Proportion variance accounted for by the PCs
         '''
-        pass
+        total = e_vals.sum()
+        self.prop_var = [float(e_val/total) for e_val in e_vals]
+        return self.prop_var
 
     def compute_cum_var(self, prop_var):
         '''Computes the cumulative variance accounted for by the principal components (PCs).
@@ -135,7 +139,8 @@ class PCA:
         Python list. len = num_pcs
             Cumulative variance accounted for by the PCs
         '''
-        pass
+        self.cum_var = [sum(prop_var[:i + 1]) for i in range(len(prop_var))]
+        return self.cum_var
 
     def fit(self, vars, normalize_dataset=False):
         '''Fits PCA to the data variables `vars` by computing the full set of PCs. The goal is to compute 
@@ -163,7 +168,25 @@ class PCA:
         except for self.A_proj (this will happen later).
         - Remember, this method does NOT actually transform the dataset by PCA.
         '''
-        pass
+        self.vars = vars
+        self.normalized = normalize_dataset
+        self.A = self.data[vars].to_numpy()
+        if self.normalized:
+            self.A = normalize(self.A)
+
+        cov_matrix = self.covariance_matrix(self.A)
+        eig = np.linalg.eig(cov_matrix)
+        self.e_vals = eig.eigenvalues.real
+        self.e_vecs = eig.eigenvectors
+        sort_indices = np.argsort(self.e_vals)[::-1]
+        self.e_vals = self.e_vals[sort_indices]
+        self.e_vecs = self.e_vecs[sort_indices]
+
+        self.compute_prop_var(self.evals)
+        self.compute_cum_var(self.prop_var)
+
+
+
 
     def elbow_plot(self, num_pcs_to_keep=None):
         '''Plots a curve of the cumulative variance accounted for by the top `num_pcs_to_keep` PCs.

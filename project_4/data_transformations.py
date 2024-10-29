@@ -20,7 +20,7 @@ def normalize(data):
     -----------
     ndarray. shape=(N, M). The min-max normalized dataset.
     '''
-    pass
+    return (data - data.min(axis=0))/(data.max(axis=0) - data.min(axis=0))
 
 
 def center(data):
@@ -34,7 +34,7 @@ def center(data):
     -----------
     ndarray. shape=(N, M). The centered dataset.
     '''
-    pass
+    return data - data.mean(axis=0)
 
 
 def rotation_matrix_3d(degrees, axis='x'):
@@ -51,4 +51,18 @@ def rotation_matrix_3d(degrees, axis='x'):
 
     NOTE: This method just CREATES and RETURNS the rotation matrix. It does NOT actually PERFORM the rotation!
     '''
-    pass
+    radians = np.deg2rad(degrees)
+    if axis == 'x':
+        return np.array([[1, 0, 0],
+                         [0, np.cos(radians), -np.sin(radians)],
+                         [0, np.sin(radians), np.cos(radians)]])
+    elif axis == "y":
+        return np.array([[np.cos(radians), 0, np.sin(radians)],
+                         [0, 1, 0],
+                         [-np.sin(radians), 0, np.cos(radians)]])
+    elif axis == "z":
+        return np.array([[np.cos(radians), -np.sin(radians), 0],
+                         [np.sin(radians), np.cos(radians), 0],
+                         [0, 0, 1]])
+    else:
+        raise ValueError(f"Expected axis value `x`, `y`, or `z` but found `{axis}`.")
