@@ -171,18 +171,21 @@ class PCA:
         self.vars = vars
         self.normalized = normalize_dataset
         self.A = self.data[vars].to_numpy()
+        self.orig_means = self.A.mean(axis=0)
+        self.orig_maxs = self.A.max(axis=0)
+        self.orig_mins = self.A.min(axis=0)
         if self.normalized:
             self.A = normalize(self.A)
 
         cov_matrix = self.covariance_matrix(self.A)
         eig = np.linalg.eig(cov_matrix)
         self.e_vals = eig.eigenvalues.real
-        self.e_vecs = eig.eigenvectors
+        self.e_vecs = eig.eigenvectors.real
         sort_indices = np.argsort(self.e_vals)[::-1]
         self.e_vals = self.e_vals[sort_indices]
-        self.e_vecs = self.e_vecs[sort_indices]
+        self.e_vecs = self.e_vecs[:, sort_indices]
 
-        self.compute_prop_var(self.evals)
+        self.compute_prop_var(self.e_vals)
         self.compute_cum_var(self.prop_var)
 
 
@@ -204,6 +207,16 @@ class PCA:
         '''
         if self.cum_var is None:
             raise ValueError('Cant plot cumulative variance. Compute the PCA first.')
+        if num_pcs_to_keep is None:
+            num_pcs_to_keep = len(self.e_vals)
+        x = [i + 1 for i in range(len(self.cum_var[:num_pcs_to_keep]))]
+        y = self.cum_var[:num_pcs_to_keep]
+        plt.scatter(x, y, marker="x", s=150)
+        plt.title(f"Cumulative Variance of First {num_pcs_to_keep} Principal Components")
+        plt.xlabel("# of Princial Components")
+        plt.ylabel("Cumulative Variance")
+        
+        
 
     def pca_project(self, pcs_to_keep):
         '''Project the data onto `pcs_to_keep` PCs (not necessarily contiguous)
@@ -225,7 +238,11 @@ class PCA:
 
         NOTE: This method should set the variable `self.A_proj`
         '''
-        pass
+        A_centered = center(self.A)
+        pcs = self.e_vecs[:, pcs_to_keep]
+        self.A_proj = A_centered @ pcs
+        return self.A_proj
+        
 
     def pca_then_project_back(self, top_k):
         '''Project the data into PCA space (on `top_k` PCs) then project it back to the data space
@@ -242,7 +259,15 @@ class PCA:
 
         NOTE: If you normalized, remember to rescale the data projected back to the original data space.
         '''
-        pass
+        self.A_proj = self.pca_project(range(top_k))
+        A_result = self.A_proj @ self.e_vecs[:, :top_k].transpose() + self.orig_means
+        
+        if self.normalized:
+            A_result = (A_result * (self.orig_maxs - self.orig_means)) + self.orig_mins
+
+        return A_result
+
+        
 
     def loading_plot(self):
         '''Create a loading plot of the top 2 PC eigenvectors
@@ -257,4 +282,16 @@ class PCA:
         - Use plt.annotate to label each line by the variable that it corresponds to.
         - Reminder to create useful x and y axis labels.
         '''
-        pass
+        for i, (x, y) in enumerate(self.e_vecs[:, :2]):
+            plt.plot([0, x], [0, y])
+            plt.annotate(self.data.columns[i], xy=(x-0.001,y),  rotation=-5, ha="left", fontsize=13)
+
+        plt.xlim(-0.5, 1)
+        plt.ylim(-0.9, 0.5)
+        plt.xlabel("PC1")
+        plt.ylabel("PC2")
+        plt.title("Loading Plot of Dataset")
+        plt.show()
+
+
+        
