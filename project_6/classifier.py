@@ -51,7 +51,13 @@ class Classifier:
         ndarray. shape=(num_classes, num_classes).
             Confusion matrix
         '''
-        pass
+        conf_matrix = np.ndarray(shape=(self.num_classes, self.num_classes))
+
+        for i in range(self.num_classes):
+            for j in range(self.num_classes):
+                conf_matrix[i, j] = (y_pred[y == i] == j).sum()
+
+        return conf_matrix
 
     def train(self, data, y):
         '''Every child should implement this method. Keep this blank.'''
