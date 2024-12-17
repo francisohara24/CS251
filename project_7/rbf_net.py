@@ -6,43 +6,39 @@ Fall 2024
 '''
 import numpy as np
 import kmeans
+from scipy.linalg import lstsq
 
 
 class RBF_Net:
     def __init__(self, num_hidden_units, num_classes):
-        '''RBF network constructor
+        """RBF network constructor
 
         Parameters:
         -----------
         num_hidden_units: int. Number of hidden units in network. NOTE: does NOT include bias unit
+
         num_classes: int. Number of output units in network. Equals number of possible classes in
             dataset
 
-        TODO:
-        - Define number of hidden units as an instance variable called `k` (as in k clusters)
-            (You can think of each hidden unit as being positioned at a cluster center)
-        - Define number of classes (number of output units in network) as an instance variable
-        '''
-        """prototypes: Hidden unit prototypes (i.e. center)
-          shape=(num_hidden_units, num_features)"""
-        self.prototypes = None
-        
+        prototypes: Hidden unit prototypes (i.e. center)
+            shape=(num_hidden_units, num_features)
 
-        """sigmas: Hidden unit sigmas: controls how active each hidden unit becomes to inputs that
+        sigmas: Hidden unit sigmas: controls how active each hidden unit becomes to inputs that
         are similar to the unit's prototype (i.e. center).
           shape=(num_hidden_units,)
           Larger sigma -> hidden unit becomes active to dissimilar inputs
-          Smaller sigma -> hidden unit only becomes active to similar inputs"""
-        self.sigmas = None
-        
-        """wts: Weights connecting hidden and output layer neurons.
+          Smaller sigma -> hidden unit only becomes active to similar inputs
+
+        wts: Weights connecting hidden and output layer neurons.
           shape=(num_hidden_units+1, num_classes)
           The reason for the +1 is to account for the bias (a hidden unit whose activation is always
-          set to 1)."""
-        self.wts = None
-
-        self.num_hidden_units = num_hidden_units
+          set to 1).
+        """
+        self.k = num_hidden_units
         self.num_classes = num_classes
+        self.prototypes = None
+        self.sigmas = None
+        self.wts = None
 
     def get_prototypes(self):
         '''Returns the hidden layer prototypes (centers)
@@ -62,7 +58,7 @@ class RBF_Net:
         -----------
         int. Number of hidden units.
         '''
-        return self.num_hidden_units
+        return self.k
 
     def get_num_output_units(self):
         '''Returns the number of output layer units.
@@ -117,9 +113,10 @@ class RBF_Net:
         that are assigned to it. Hint: You implemented a method to do this!
         '''
         kmeans_ = kmeans.KMeans(data)
-        kmeans_.cluster_batch(self.num_hidden_units, 5)
+        kmeans_.cluster_batch(self.k, 10)
         self.prototypes = kmeans_.centroids
         self.sigmas = self.avg_cluster_dist(data, kmeans_.centroids, kmeans_.data_centroid_labels, kmeans_)
+
 
     def linear_regression(self, A, y):
         '''Performs linear regression. Adapt your SciPy lstsq code from the linear regression project.
@@ -138,7 +135,11 @@ class RBF_Net:
 
         NOTE: Remember to handle the intercept column.
         '''
-        pass
+        A_hat = np.hstack((A, np.ones(shape=(A.shape[0], 1))))
+        c, _, _, _ = lstsq(A_hat, y)
+        return c
+
+
 
     def hidden_act(self, data):
         '''Compute the activation of the hidden layer units
@@ -154,11 +155,12 @@ class RBF_Net:
             Do NOT include the bias unit activation.
             See notebook for refresher on the activation equation
         '''
-        h = np.ndarray(shape=(data.shape[0], self.num_hidden_units))
-
+        h = np.ndarray(shape=(data.shape[0], self.k))
         for i in range(data.shape[0]):
-            h[i] = np.exp((((data[i] - self.prototypes) ** 2).sum(axis=1) ** 0.5) / (((self.sigmas ** 2) * 2) + 10**-8))
+            for j in range(self.k):
+                h[i, j] = np.exp(-1 * ((((self.prototypes[j] - data[i]) ** 2).sum() ** 0.5) ** 2)/((2 * (self.sigmas[j] ** 2)) + (10 ** -8)))
         return h
+
 
     def output_act(self, hidden_acts):
         '''Compute the activation of the output layer units
@@ -179,7 +181,9 @@ class RBF_Net:
         - Can be done without any for loops.
         - Don't forget about the bias unit!
         '''
-        pass
+        h_hat = np.hstack((hidden_acts, np.ones(shape=(hidden_acts.shape[0],1))))
+        return h_hat @ self.wts
+
 
     def train(self, data, y):
         '''Train the radial basis function network
@@ -201,7 +205,20 @@ class RBF_Net:
         - Pay attention to the shape of self.wts in the constructor above. Yours needs to match.
         - The linear regression method handles the bias unit.
         '''
-        pass
+        self.initialize(data)
+        h = self.hidden_act(data)
+
+        ideal_z = np.zeros(shape=(len(y), self.num_classes))
+        for i in range(ideal_z.shape[0]):
+            ideal_z[i, y[i]] = 1
+
+        self.wts = np.ndarray(shape=(self.k + 1, self.num_classes))
+
+        for i in range(self.num_classes):
+            self.wts[:, i] = self.linear_regression(h, ideal_z[:, i])
+
+
+
 
     def predict(self, data):
         '''Classify each sample in `data`
@@ -220,7 +237,11 @@ class RBF_Net:
         - For each data sample, the assigned class is the index of the output unit that produced the
         largest activation.
         '''
-        pass
+        h = self.hidden_act(data)
+        output_acts = self.output_act(h)
+        return np.argmax(output_acts, axis=1)
+
+
 
     def accuracy(self, y, y_pred):
         '''Computes accuracy based on percent correct: Proportion of predicted class labels `y_pred`
@@ -239,4 +260,4 @@ class RBF_Net:
 
         NOTE: Can be done without any loops
         '''
-        pass
+        return (y == y_pred).sum()/len(y)
