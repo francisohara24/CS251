@@ -1,6 +1,6 @@
 '''pca_cov.py
 Performs principal component analysis using the covariance matrix of the dataset
-YOUR NAME HERE
+Francis O'Hara
 CS 251 / 252: Data Analysis and Visualization
 Fall 2024
 '''

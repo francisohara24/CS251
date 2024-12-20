@@ -1,6 +1,6 @@
 '''rbf_net.py
 Radial Basis Function Neural Network
-YOUR NAME HERE
+Francis O'Hara
 CS 251: Data Analysis and Visualization
 Fall 2024
 '''
